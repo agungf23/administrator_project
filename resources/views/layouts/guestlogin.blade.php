@@ -47,24 +47,6 @@
                     </div>
                 </div>
             </div>
-            <footer class="footer position-absolute bottom-2 py-2 w-100">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-md-6 my-auto">
-                            <div class="copyright text-center text-sm text-white text-lg-start">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>,
-                                made with <i class="fa fa-heart" aria-hidden="true"></i> by
-                                <a href="https://www.creative-tim.com" class="font-weight-bold text-white"
-                                    target="_blank">Agung Nugroho</a>
-                                for a better administrator web app.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </main>
     <!--   Core JS Files   -->
