@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
+@section('dashboard')
 
 <div class="container-fluid py-4">
     {{-- For Table --}}

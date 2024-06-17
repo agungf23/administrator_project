@@ -13,8 +13,6 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // // // Employee List Route
-// // routes/web.php
-
 Route::get('/employeelist', function () {
     return view('employee.employeelist');
 })->middleware(['auth', 'verified'])->name('employeelist');

@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('Number');
             $table->string('Name');
-            $table->string('Email Address');
+            $table->string('Email');
+            $table->string('Address');
             $table->string('Phone Number');
             $table->string('Position');
             $table->enum('Status', ['Active', 'Deactive', 'Out']);
+            $table->string('City');
+            $table->string('Country');
             $table->timestamps();
         });
     }
