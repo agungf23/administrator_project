@@ -46,7 +46,7 @@
                         <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column ms-auto me-auto ms-lg-auto me-lg-5">
                             <div class="card card-plain">
                                 <div class="card-header">
-                                    <h4 class="font-weight-bolder">Sign Up</h4>
+                                    <h4 class="font-weight-bolder">Register</h4>
                                     <p class="mb-0">Enter your email and password to register</p>
                                 </div>
                                 <div class="card-body">
@@ -55,7 +55,7 @@
                                 <div class="card-footer text-center pt-0 px-lg-2 px-1">
                                     <p class="mb-2 text-sm mx-auto">
                                         Already have an account?
-                                        <a href="../pages/sign-in.html"
+                                        <a href="{{ route('login') }}"
                                             class="text-primary text-gradient font-weight-bold">Sign in</a>
                                     </p>
                                 </div>

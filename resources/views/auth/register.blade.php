@@ -16,24 +16,28 @@
 
         <form role="form">
             <div class="input-group input-group-outline mb-3">
-                <label class="form-label">First Name</label>
-                <input type="text" class="form-control">
+                <input class="form-control" id="inputFirstName" name="name" type="text" placeholder="first name"
+                    value="{{ old('name') }}" />
+                <label for="inputFirstName"></label>
             </div>
             <div class="input-group input-group-outline mb-3">
-                <label class="form-label">Last Name</label>
-                <input type="email" class="form-control">
+                <input class="form-control" id="inputLastName" name="name" type="text" placeholder="last name"
+                    value="{{ old('name') }}" />
+                <label for="inputLastName"></label>
             </div>
             <div class="input-group input-group-outline mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="password" class="form-control">
+                <input class="form-control" id="inputEmail" name="email" type="email" placeholder="Your Email"
+                    value="{{ old('email') }}" />
+                <label for="inputEmail"></label>
             </div>
             <div class="input-group input-group-outline mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control">
+                <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" />
+                <label for="inputPassword"></label>
             </div>
             <div class="input-group input-group-outline mb-3">
-                <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-control">
+                <input class="form-control" id="inputPassword" name="password_confirmation" type="password_confirmation"
+                    placeholder="Confirm password"/>
+                <label for="inputPasswordConfirm"></label>
             </div>
             <div class="form-check form-check-info text-start ps-0">
                 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
@@ -45,5 +49,6 @@
                 <button type="submit" class="btn btn-lg bg-gradient-primary btn-lg w-100 mt-4 mb-0">Sign
                     Up</button>
             </div>
+
         </form>
-        @endsection
+    @endsection
