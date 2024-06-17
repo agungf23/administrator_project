@@ -7,9 +7,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Dashboard Route
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// // // Employee List Route
+// // routes/web.php
+
+Route::get('/employeelist', function () {
+    return view('employee.employeelist');
+})->middleware(['auth', 'verified'])->name('employeelist');
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
