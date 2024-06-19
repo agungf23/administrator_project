@@ -34,6 +34,8 @@
         <!-- End Navbar -->
         @yield('dashboard')
         @yield('employeelist')
+        @yield('employeeedit')
+        @yield('employeedetail')
     </main>
     <!--   Core JS Files   -->
     <script src="../assets/js/core/popper.min.js"></script>

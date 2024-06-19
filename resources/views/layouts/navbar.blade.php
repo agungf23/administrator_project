@@ -1,4 +1,4 @@
-@unless (Request::is('employeelist') || Request::is('employeeedit') || Request::is('employedetail'))
+@unless (Request::is('employeelist') || Request::is('employeedit') || Request::is('employeedetail'))
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
         <div class="container-fluid py-1 px-3">
 

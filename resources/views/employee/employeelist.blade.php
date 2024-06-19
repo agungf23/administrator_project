@@ -195,6 +195,8 @@
                                         <span class="input-group-addon"><i class="material-icons">&#xE8B6;</i></span>
                                     </div>
                                 </div>
+                                <a href="#" class="btn btn-primary"><i class="material-icons">&#xE863;</i>
+                                    <span>Refresh List</span></a>
                             </div>
                         </div>
                     </div>

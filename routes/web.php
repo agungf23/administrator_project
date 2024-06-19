@@ -17,6 +17,16 @@ Route::get('/employeelist', function () {
     return view('employee.employeelist');
 })->middleware(['auth', 'verified'])->name('employeelist');
 
+// // // Employee Edit Route
+Route::get('/employeedit', function () {
+    return view('employee.employeedit');
+})->middleware(['auth', 'verified'])->name('employeedit');
+
+// // // Employee Detail Route
+Route::get('/employeedetail', function () {
+    return view('employee.employeedetail');
+})->middleware(['auth', 'verified'])->name('employeedetail');
+
 
 
 
