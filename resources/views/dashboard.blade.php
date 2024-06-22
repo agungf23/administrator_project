@@ -1,48 +1,84 @@
 @extends('layouts.app')
 
 @section('dashboard')
-
-<div class="container-fluid py-4">
-    {{-- For Table --}}
-
-
-    <footer class="footer py-4  ">
-        <div class="container-fluid">
-            <div class="row align-items-center justify-content-lg-between">
-                <div class="col-lg-6 mb-lg-0 mb-4">
-                    <div class="copyright text-center text-sm text-muted text-lg-start">
-                        ©
-                        <script>
-                            document.write(new Date().getFullYear())
-                        </script>,
-                        made with <i class="fa fa-heart"></i> by
-                        <a href="https://www.creative-tim.com" class="font-weight-bold"
-                            target="_blank">Creative Tim</a>
-                        for a better web.
+    <style>
+        .card {
+            height: 100%;
+        }
+    </style>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Employees</h5>
+                        <p class="card-text display-4 text-center">100</p>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com" class="nav-link text-muted"
-                                target="_blank">Creative Tim</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted"
-                                target="_blank">About Us</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/blog" class="nav-link text-muted"
-                                target="_blank">Blog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted"
-                                target="_blank">License</a>
-                        </li>
-                    </ul>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Employees</h5>
+                        <p class="card-text display-4 text-center">80</p>
+                    </div>
                 </div>
             </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Inactive Employees</h5>
+                        <p class="card-text display-4 text-center">20</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Time</h5>
+                            <p id="time" class="card-text display-4 text-center"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function updateTime() {
+                    const options = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric',
+                        timeZone: 'Asia/Jakarta'
+                    };
+
+                    const now = new Date();
+                    const formattedTime = now.toLocaleDateString('en-US', options);
+                    document.getElementById('time').textContent = formattedTime;
+                }
+
+                updateTime();
+                setInterval(updateTime, 1000); // Update time every second
+            </script>
         </div>
-    </footer>
-</div>
+
+        <footer class="footer py-4  ">
+            <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            ©
+                            <script>
+                                document.write(new Date().getFullYear())
+                            </script>,
+                            <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Agung Nugroho</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 @endsection

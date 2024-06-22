@@ -23,11 +23,14 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
 
         <style>
             body {
@@ -347,7 +350,8 @@
                             </div>
                         </div>
                     </div>
-                    <table id="employeeTable" class="table table-striped table-hover">
+
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>
@@ -356,22 +360,21 @@
                                         <label for="selectAll"></label>
                                     </span>
                                 </th>
-                                <th>Number</th>
+                                <th>ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Address</th>
                                 <th>Phone Number</th>
                                 <th>Position</th>
                                 <th>Status</th>
-                                <th>City</th>
-                                <th>Country</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="employeeTable">
-                            <!-- Device data will be filled here by JavaScript -->
+                        <tbody id="employeeTableBody">
+                            <!-- Employee data will be filled here by JavaScript -->
                         </tbody>
                     </table>
+
                     <div class="clearfix">
                         <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
                         <ul class="pagination">
@@ -387,11 +390,12 @@
                 </div>
             </div>
         </div>
+
         <!-- Add Modal HTML -->
         <div id="addEmployeeModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="addEmployeeForm">
+                    <form id="createEmployeeForm">
                         @csrf
                         <div class="modal-header">
                             <h4 class="modal-title">Add Employee</h4>
@@ -399,44 +403,32 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Number</label>
-                                <input type="text" class="form-control" name="Number" required>
-                            </div>
-                            <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" class="form-control" name="Name" required>
+                                <input type="text" id="name" name="name" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" name="Email" required>
+                                <input type="email" id="email" name="email" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Address</label>
-                                <textarea class="form-control" name="Address" required></textarea>
+                                <input type="text" id="address" name="address" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="text" class="form-control" name="Phone Number" required>
+                                <input type="text" id="phone_number" name="phone_number" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Position</label>
-                                <input type="text" class="form-control" name="Position" required>
+                                <input type="text" id="position" name="position" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Status</label>
-                                <select class="form-control" name="Status" required>
-                                    <option value="Active">Active</option>
-                                    <option value="Deactive">Deactive</option>
-                                    <option value="Out">Out</option>
+                                <select id="status" name="status" class="form-control" required>
+                                    <option value="active">Active</option>
+                                    <option value="deactive">Deactive</option>
+                                    <option value="out">Out</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>City</label>
-                                <input type="text" class="form-control" name="City" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Country</label>
-                                <input type="text" class="form-control" name="Country" required>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -444,17 +436,18 @@
                             <input type="submit" class="btn btn-success" value="Add">
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
+
         <!-- Edit Modal HTML -->
         <div id="editEmployeeModal" class="modal fade">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form id="editEmployeeForm">
+                    <form id="updateEmployeeForm">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" id="update_id" name="id">
                         <div class="modal-header">
                             <h4 class="modal-title">Edit Employee</h4>
                             <button type="button" class="close" data-dismiss="modal"
@@ -462,44 +455,34 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Number</label>
-                                <input type="text" class="form-control" name="Number" required>
-                            </div>
-                            <div class="form-group">
                                 <label>Name</label>
-                                <input type="text" class="form-control" name="Name" required>
+                                <input type="text" id="update_name" name="name" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Email</label>
-                                <input type="email" class="form-control" name="Email" required>
+                                <input type="email" id="update_email" name="email" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Address</label>
-                                <textarea class="form-control" name="Address" required></textarea>
+                                <input type="text" id="update_address" name="address" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label>Phone Number</label>
-                                <input type="text" class="form-control" name="Phone Number" required>
+                                <input type="text" id="update_phone_number" name="phone_number" class="form-control"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label>Position</label>
-                                <input type="text" class="form-control" name="Position" required>
+                                <input type="text" id="update_position" name="position" class="form-control"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label>Status</label>
-                                <select class="form-control" name="Status" required>
-                                    <option value="Active">Active</option>
-                                    <option value="Deactive">Deactive</option>
-                                    <option value="Out">Out</option>
+                                <select id="update_status" name="status" class="form-control" required>
+                                    <option value="active">Active</option>
+                                    <option value="deactive">Deactive</option>
+                                    <option value="out">Out</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>City</label>
-                                <input type="text" class="form-control" name="City" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Country</label>
-                                <input type="text" class="form-control" name="Country" required>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -507,10 +490,10 @@
                             <input type="submit" class="btn btn-info" value="Save">
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
+
         <!-- Delete Modal HTML -->
         <div id="deleteEmployeeModal" class="modal fade">
             <div class="modal-dialog">
@@ -525,9 +508,6 @@
                         </div>
                         <div class="modal-body">
                             <p>Are you sure you want to delete this record?</p>
-                            <p class="text-warning"><small>This action cannot be undone.</small></p>
-                            <!-- Hidden input to store the ID of the employee to be deleted -->
-                            <input type="hidden" name="id" id="employeeIdToDelete">
                         </div>
                         <div class="modal-footer">
                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -539,131 +519,164 @@
         </div>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Fetch and display employees when the page loads
+            $(document).ready(function() {
+                // Initialize employee data retrieval
                 fetchEmployees();
 
-                // Add Employee
-                document.getElementById('addEmployeeForm').addEventListener('submit', function(event) {
+                // Update employee data every 5 seconds
+                setInterval(fetchEmployees, 5000);
+
+                // Function to retrieve all employee data
+                function fetchEmployees() {
+                    axios.get('/api/employees')
+                        .then(response => {
+                            let employees = response.data.data;
+                            let employeeTableBody = $('#employeeTableBody');
+                            employeeTableBody.empty();
+                            employees.forEach(employee => {
+                                employeeTableBody.append(`
+                                    <tr>
+                                        <td>
+                                            <span class="custom-checkbox">
+                                                <input type="checkbox" id="selectAll${employee.id}" name="options[]" value="${employee.id}">
+                                                <label for="checkbox${employee.id}"></label>
+                                            </span>
+                                        </td>
+                                        <td>${employee.id}</td>
+                                        <td>${employee.name}</td>
+                                        <td>${employee.email}</td>
+                                        <td>${employee.address}</td>
+                                        <td>${employee.phone_number}</td>
+                                        <td>${employee.position}</td>
+                                        <td>${employee.status}</td>
+                                        <td>
+                                            <a href="#editEmployeeModal" class="edit" data-toggle="modal" onclick="editEmployee(${employee.id})">
+                                                <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                                            </a>
+                                            <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" onclick="deleteEmployee(${employee.id})">
+                                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+                            addCheckboxEventListeners();
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
+
+                // Function to create new employees
+                $('#createEmployeeForm').submit(function(event) {
                     event.preventDefault();
-                    let formData = new FormData(this);
+                    let formData = $(this).serialize();
                     axios.post('/api/employees', formData)
                         .then(response => {
-                            console.log('Employee added successfully:', response.data);
-                            $('#addEmployeeModal').modal('hide');
-                            fetchEmployees();
-                            alert(response.data.message);
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Employee has been added",
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(() => {
+                                $('#addEmployeeModal').modal('hide');
+                                fetchEmployees();
+                            });
                         })
                         .catch(error => {
-                            console.error('Error adding employee:', error.response ? error.response.data :
-                                error);
-                            alert('Error adding employee: ' + (error.response ? error.response.data
-                                .message : error.message));
+                            console.log(error);
                         });
                 });
 
-                // Edit Employee
-                document.getElementById('editEmployeeForm').addEventListener('submit', function(event) {
-                    event.preventDefault();
-                    let formData = new FormData(this);
-                    let employeeId = formData.get('id');
-                    axios.put(`/api/employees/${employeeId}`, formData)
+                // Function to retrieve employee data to be edited
+                window.editEmployee = function(id) {
+                    axios.get(`/api/employees/${id}`)
                         .then(response => {
-                            console.log('Employee updated successfully:', response.data);
-                            $('#editEmployeeModal').modal('hide');
-                            fetchEmployees();
-                            alert(response.data.message);
+                            let employee = response.data.data;
+                            $('#update_id').val(employee.id);
+                            $('#update_name').val(employee.name);
+                            $('#update_email').val(employee.email);
+                            $('#update_address').val(employee.address);
+                            $('#update_phone_number').val(employee.phone_number);
+                            $('#update_position').val(employee.position);
+                            $('#update_status').val(employee.status);
                         })
                         .catch(error => {
-                            console.error('Error editing employee:', error.response ? error.response.data :
-                                error);
-                            alert('Error editing employee: ' + (error.response ? error.response.data
-                                .message : error.message));
+                            console.log(error);
                         });
-                });
+                };
 
-                // Delete Employee
-                document.getElementById('deleteEmployeeForm').addEventListener('submit', function(event) {
+                // Function to update employee data
+                $('#updateEmployeeForm').submit(function(event) {
                     event.preventDefault();
-                    let employeeId = document.getElementById('employeeIdToDelete').value;
-                    axios.delete(`/api/employees/${employeeId}`)
+                    let id = $('#update_id').val();
+                    let formData = $(this).serialize();
+                    axios.put(`/api/employees/${id}`, formData)
                         .then(response => {
-                            console.log('Employee deleted successfully:', response.data);
-                            $('#deleteEmployeeModal').modal('hide');
-                            fetchEmployees();
-                            alert(response.data.message);
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: "Employee has been updated",
+                                showConfirmButton: false,
+                                timer: 3000
+                            }).then(() => {
+                                $('#editEmployeeModal').modal('hide');
+                                fetchEmployees();
+                            });
                         })
                         .catch(error => {
-                            console.error('Error deleting employee:', error.response ? error.response.data :
-                                error);
-                            alert('Error deleting employee: ' + (error.response ? error.response.data
-                                .message : error.message));
+                            console.log(error);
                         });
                 });
-            });
 
-            function fetchEmployees() {
-                console.log('Fetching employees...');
-                axios.get('/api/employees')
-                    .then(response => {
-                        console.log('Employees fetched successfully:', response.data);
-                        let employees = response.data.data;
-                        let employeeTableBody = document.querySelector('#employeeTable tbody');
-                        employeeTableBody.innerHTML = '';
-                        employees.forEach(employee => {
-                            let row = `<tr>
-                    <td>${employee.Number}</td>
-                    <td>${employee.Name}</td>
-                    <td>${employee.Email}</td>
-                    <td>${employee.Address}</td>
-                    <td>${employee['Phone Number']}</td>
-                    <td>${employee.Position}</td>
-                    <td>${employee.Status}</td>
-                    <td>${employee.City}</td>
-                    <td>${employee.Country}</td>
-                    <td>
-                        <button class="btn btn-info" onclick="openEditModal(${employee.id})">Edit</button>
-                        <button class="btn btn-danger" onclick="openDeleteModal(${employee.id})">Delete</button>
-                    </td>
-                </tr>`;
-                            employeeTableBody.insertAdjacentHTML('beforeend', row);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching employees:', error.response ? error.response.data : error);
-                        alert('Error fetching employees: ' + (error.response ? error.response.data.message : error
-                        .message));
+                // Function to delete employees
+                window.deleteEmployee = function(id) {
+                    $('#deleteEmployeeForm').off('submit').on('submit', function(event) {
+                        event.preventDefault();
+                        axios.delete(`/api/employees/${id}`)
+                            .then(response => {
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "success",
+                                    title: "Employee has been deleted",
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                }).then(() => {
+                                    $('#deleteEmployeeModal').modal('hide');
+                                    fetchEmployees();
+                                });
+                            })
+                            .catch(error => {
+                                console.log(error);
+                            });
                     });
-            }
+                };
 
-            function openEditModal(employeeId) {
-                axios.get(`/api/employees/${employeeId}`)
-                    .then(response => {
-                        let employee = response.data;
-                        document.getElementById('editEmployeeForm').elements['id'].value = employee.id;
-                        document.getElementById('editEmployeeForm').elements['Number'].value = employee.Number;
-                        document.getElementById('editEmployeeForm').elements['Name'].value = employee.Name;
-                        document.getElementById('editEmployeeForm').elements['Email'].value = employee.Email;
-                        document.getElementById('editEmployeeForm').elements['Address'].value = employee.Address;
-                        document.getElementById('editEmployeeForm').elements['Phone Number'].value = employee[
-                            'Phone Number'];
-                        document.getElementById('editEmployeeForm').elements['Position'].value = employee.Position;
-                        document.getElementById('editEmployeeForm').elements['Status'].value = employee.Status;
-                        document.getElementById('editEmployeeForm').elements['City'].value = employee.City;
-                        document.getElementById('editEmployeeForm').elements['Country'].value = employee.Country;
-                        $('#editEmployeeModal').modal('show');
-                    })
-                    .catch(error => console.error('Error fetching employee data:', error.response ? error.response.data :
-                        error));
-            }
-
-            function openDeleteModal(employeeId) {
-                document.getElementById('employeeIdToDelete').value = employeeId;
-                $('#deleteEmployeeModal').modal('show');
-            }
+                // Add event listeners to checkboxes
+                function addCheckboxEventListeners() {
+                    var checkbox = $('table tbody input[type="checkbox"]');
+                    $("#selectAll").off('click').on('click', function() {
+                        if (this.checked) {
+                            checkbox.each(function() {
+                                this.checked = true;
+                            });
+                        } else {
+                            checkbox.each(function() {
+                                this.checked = false;
+                            });
+                        }
+                    });
+                    checkbox.off('click').on('click', function() {
+                        if (!this.checked) {
+                            $("#selectAll").prop("checked", false);
+                        }
+                    });
+                }
+            });
         </script>
-         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </body>
 
     </html>

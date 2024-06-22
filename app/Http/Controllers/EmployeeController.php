@@ -18,15 +18,12 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'Number'        => 'required|string|max:255',
-            'Name'          => 'required|string|max:255',
-            'Email'         => 'required|email|max:255',
-            'Address'       => 'required|string|max:255',
-            'Phone Number'  => 'required|string|max:255',
-            'Position'      => 'required|string|max:255',
-            'Status'        => 'required|in:Active,Deactive,Out',
-            'City'          => 'required|string|max:255',
-            'Country'       => 'required|string|max:255',
+            'name'         => 'required|string|max:255',
+            'email'        => 'required|email|max:255',
+            'address'      => 'required|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'position'     => 'required|string|max:255',
+            'status'       => 'required|in:active,deactive,out',
         ]);
 
         $employee = Employee::create($validatedData);
@@ -47,15 +44,12 @@ class EmployeeController extends Controller
         $employee = Employee::findOrFail($id);
 
         $validatedData = $request->validate([
-            'Number'        => 'sometimes|string|max:255',
-            'Name'          => 'sometimes|string|max:255',
-            'Email'         => 'sometimes|email|max:255',
-            'Address'       => 'sometimes|string|max:255',
-            'Phone Number'  => 'sometimes|string|max:255',
-            'Position'      => 'sometimes|string|max:255',
-            'Status'        => 'sometimes|in:Active,Deactive,Out',
-            'City'          => 'sometimes|string|max:255',
-            'Country'       => 'sometimes|string|max:255',
+            'name'         => 'sometimes|string|max:255',
+            'email'        => 'sometimes|email|max:255',
+            'address'      => 'sometimes|string|max:255',
+            'phone_number' => 'sometimes|string|max:255',
+            'position'     => 'sometimes|string|max:255',
+            'status'       => 'sometimes|in:active,deactive,out',
         ]);
 
         $employee->update($validatedData);

@@ -13,15 +13,12 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->string('Number');
-            $table->string('Name');
-            $table->string('Email');
-            $table->string('Address');
-            $table->string('Phone Number');
-            $table->string('Position');
-            $table->enum('Status', ['Active', 'Deactive', 'Out']);
-            $table->string('City');
-            $table->string('Country');
+            $table->string('name');
+            $table->string('email');
+            $table->string('address');
+            $table->string('phone_number');
+            $table->string('position');
+            $table->enum('status', ['active', 'deactive', 'out']);
             $table->timestamps();
         });
     }

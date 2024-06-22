@@ -9,15 +9,13 @@ class Employee extends Model
 {
     use HasFactory;
 
+    // Columns that can be filled in via mass assignment
     protected $fillable = [
-        'Number',
-        'Name',
-        'Email',
-        'Address',
-        'Phone Number',
-        'Position',
-        'Status',
-        'City',
-        'Country',
+        'name',
+        'email',
+        'address',
+        'phone_number',
+        'position',
+        'status',
     ];
 }

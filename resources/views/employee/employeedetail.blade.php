@@ -24,9 +24,12 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
         <style>
             body {
                 color: #566787;
@@ -147,7 +150,7 @@
                     <div class="table-title">
                         <div class="row">
                             <div class="col-sm-6">
-                                <h2>Manage <b>Domains</b></h2>
+                                <h2>Employee <b>Detail</b></h2>
                             </div>
                             <div class="col-sm-6">
                                 <div class="btn-group" data-toggle="buttons">
@@ -170,54 +173,94 @@
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Email</th>
-                                <th>Created&nbsp;On</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Created&nbsp;At</th>
+                                <th>Updated&nbsp;On</th>
                                 <th>Status</th>
-                                <th>Country</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr data-status="active">
-                                <td>1</td>
-                                <td><a href="#">loremvallis.com</a></td>
-                                <td>04/10/2013</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>Buenos Aires</td>
-                            </tr>
-                            <tr data-status="deactive">
-                                <td>2</td>
-                                <td><a href="#">quisquamut.net</a></td>
-                                <td>05/08/2014</td>
-                                <td><span class="badge badge-warning">deactive</span></td>
-                                <td>Australia</td>
-                            </tr>
-                            <tr data-status="active">
-                                <td>3</td>
-                                <td><a href="#">convallissed.com</a></td>
-                                <td>11/05/2015</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>United Kingdom</td>
-                            </tr>
-                            <tr data-status="out">
-                                <td>4</td>
-                                <td><a href="#">phasellusri.org</a></td>
-                                <td>06/09/2016</td>
-                                <td><span class="badge badge-danger">out</span></td>
-                                <td>Romania</td>
-                            </tr>
-                            <tr data-status="deactive">
-                                <td>5</td>
-                                <td><a href="#">facilisleo.com</a></td>
-                                <td>12/08/2017</td>
-                                <td><span class="badge badge-warning">deactive</span></td>
-                                <td>Germany</td>
-                            </tr>
+                        <tbody id="employeeTableBody">
+                            <!-- Employee data will be filled here by JavaScript -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+        <script>
+            $(document).ready(function() {
+                // Function to fetch employees from API and populate table
+                function fetchEmployees() {
+                    axios.get('/api/employees')
+                        .then(response => {
+                            let employees = response.data.data;
+                            let employeeTableBody = $('#employeeTableBody');
+                            employeeTableBody.empty();
+                            employees.forEach(employee => {
+                                let statusClass = 'badge ';
+                                if (employee.status === 'active') statusClass += 'badge-success';
+                                else if (employee.status === 'deactive') statusClass += 'badge-warning';
+                                else if (employee.status === 'out') statusClass += 'badge-danger';
+
+                                employeeTableBody.append(`
+                                    <tr data-status="${employee.status}">
+                                        <td>${employee.id}</td>
+                                        <td>${employee.name}</td>
+                                        <td>${new Date(employee.created_at).toLocaleString()}</td>
+                                        <td>${new Date(employee.updated_at).toLocaleString()}</td>
+                                        <td><span class="${statusClass}">${employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}</span></td>
+                                    </tr>
+                                `);
+                            });
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
+
+                // Initialize fetching employees when page loads
+                fetchEmployees();
+
+                // Activate tooltips
+                $('[data-toggle="tooltip"]').tooltip();
+
+                // Filter table rows based on status filter buttons
+                $(".btn-group .btn").click(function() {
+                    let inputValue = $(this).find('input').val();
+                    if (inputValue === 'all') {
+                        $("table tbody tr").fadeIn();
+                    } else {
+                        $("table tbody tr").each(function() {
+                            let rowStatus = $(this).attr('data-status');
+                            if (rowStatus === inputValue) {
+                                $(this).fadeIn();
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                    }
+                });
+
+                // Refresh employees data on refresh button click
+                $(".btn-refresh").on("click", function() {
+                    fetchEmployees();
+                });
+
+                // Filter table rows based on search input
+                $("#search").on("keyup", function() {
+                    let term = $(this).val().toLowerCase();
+                    $("table tbody tr").each(function() {
+                        let name = $(this).find("td:nth-child(2)").text().toLowerCase();
+                        if (name.includes(term)) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                });
+            });
+        </script>
+
     </body>
 
     </html>
