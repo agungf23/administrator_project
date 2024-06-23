@@ -120,6 +120,46 @@
             table.table td .btn.manage:hover {
                 background: #2e9c81;
             }
+
+            .pagination {
+                float: right;
+                margin: 0 0 5px;
+            }
+
+            .pagination li a {
+                border: none;
+                font-size: 13px;
+                min-width: 30px;
+                min-height: 30px;
+                color: #999;
+                margin: 0 2px;
+                line-height: 30px;
+                border-radius: 2px !important;
+                text-align: center;
+                padding: 0 6px;
+            }
+
+            .pagination li a:hover {
+                color: #666;
+            }
+
+            .pagination li.active a,
+            .pagination li.active a.page-link {
+                background: #03A9F4;
+            }
+
+            .pagination li.active a:hover {
+                background: #0397d6;
+            }
+
+            .pagination li.disabled i {
+                color: #ccc;
+            }
+
+            .pagination li i {
+                font-size: 16px;
+                padding-top: 6px
+            }
         </style>
         <script>
             $(document).ready(function() {
@@ -184,16 +224,41 @@
                             <!-- Employee data will be filled here by JavaScript -->
                         </tbody>
                     </table>
+                    <div class="clearfix">
+                        <div class="hint-text">Showing <b id="showing-entries">0</b> out of <b id="total-entries">0</b>
+                            entries</div>
+                        <ul class="pagination" id="pagination">
+                            <li class="page-item disabled" id="prevPage">
+                                <a href="javascript:void(0)" class="page-link">Previous</a>
+                            </li>
+                            <li class="page-item disabled" id="nextPage">
+                                <a href="javascript:void(0)" class="page-link">Next</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         <script>
             $(document).ready(function() {
-                // Function to fetch employees from API and populate table
-                function fetchEmployees() {
-                    axios.get('/api/employees')
+                let currentPage = 1;
+                const perPage = 10;
+                let totalEntries = 0;
+                let currentStatus = 'all';
+
+                function fetchEmployees(page, perPage, status) {
+                    let apiUrl = `/api/employees?page=${page}&perPage=${perPage}`;
+                    if (status !== 'all') {
+                        apiUrl += `&status=${status}`;
+                    }
+
+                    axios.get(apiUrl)
                         .then(response => {
-                            let employees = response.data.data;
+                            const data = response.data;
+                            const employees = data.data;
+                            totalEntries = data.total;
+                            const totalPages = Math.ceil(totalEntries / perPage);
+
                             let employeeTableBody = $('#employeeTableBody');
                             employeeTableBody.empty();
                             employees.forEach(employee => {
@@ -203,64 +268,84 @@
                                 else if (employee.status === 'out') statusClass += 'badge-danger';
 
                                 employeeTableBody.append(`
-                                    <tr data-status="${employee.status}">
-                                        <td>${employee.id}</td>
-                                        <td>${employee.name}</td>
-                                        <td>${new Date(employee.created_at).toLocaleString()}</td>
-                                        <td>${new Date(employee.updated_at).toLocaleString()}</td>
-                                        <td><span class="${statusClass}">${employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}</span></td>
-                                    </tr>
-                                `);
+                            <tr data-status="${employee.status}">
+                                <td>${employee.id}</td>
+                                <td>${employee.name}</td>
+                                <td>${new Date(employee.created_at).toLocaleString()}</td>
+                                <td>${new Date(employee.updated_at).toLocaleString()}</td>
+                                <td><span class="${statusClass}">${employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}</span></td>
+                            </tr>
+                        `);
                             });
+
+                            updatePagination(page, totalPages);
+                            $('#showing-entries').text((page - 1) * perPage + 1);
+                            $('#showing-to-entries').text(Math.min(page * perPage, totalEntries));
+                            $('#total-entries').text(totalEntries);
                         })
                         .catch(error => {
                             console.log(error);
                         });
                 }
 
-                // Initialize fetching employees when page loads
-                fetchEmployees();
+                function updatePagination(page, totalPages) {
+                    let pagination = $('#pagination');
+                    pagination.empty();
 
-                // Activate tooltips
-                $('[data-toggle="tooltip"]').tooltip();
-
-                // Filter table rows based on status filter buttons
-                $(".btn-group .btn").click(function() {
-                    let inputValue = $(this).find('input').val();
-                    if (inputValue === 'all') {
-                        $("table tbody tr").fadeIn();
+                    if (page > 1) {
+                        pagination.append(
+                            `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${page - 1})">Previous</a></li>`
+                        );
                     } else {
-                        $("table tbody tr").each(function() {
-                            let rowStatus = $(this).attr('data-status');
-                            if (rowStatus === inputValue) {
-                                $(this).fadeIn();
-                            } else {
-                                $(this).hide();
-                            }
-                        });
+                        pagination.append(
+                            `<li class="page-item disabled"><a href="javascript:void(0)" class="page-link">Previous</a></li>`
+                        );
                     }
-                });
 
-                // Refresh employees data on refresh button click
-                $(".btn-refresh").on("click", function() {
-                    fetchEmployees();
-                });
-
-                // Filter table rows based on search input
-                $("#search").on("keyup", function() {
-                    let term = $(this).val().toLowerCase();
-                    $("table tbody tr").each(function() {
-                        let name = $(this).find("td:nth-child(2)").text().toLowerCase();
-                        if (name.includes(term)) {
-                            $(this).show();
+                    for (let i = 1; i <= totalPages; i++) {
+                        if (i === page) {
+                            pagination.append(
+                                `<li class="page-item active"><a href="javascript:void(0)" class="page-link" onclick="changePage(${i})">${i}</a></li>`
+                            );
                         } else {
-                            $(this).hide();
+                            pagination.append(
+                                `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${i})">${i}</a></li>`
+                            );
                         }
-                    });
+                    }
+
+                    if (page < totalPages) {
+                        pagination.append(
+                            `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${page + 1})">Next</a></li>`
+                        );
+                    } else {
+                        pagination.append(
+                            `<li class="page-item disabled"><a href="javascript:void(0)" class="page-link">Next</a></li>`
+                        );
+                    }
+                }
+
+                window.changePage = function(page) {
+                    currentPage = page;
+                    fetchEmployees(currentPage, perPage, currentStatus);
+                }
+
+                function handleFilterAndPagination(status) {
+                    currentStatus = status;
+                    currentPage = 1; // Reset to first page when filter changes
+                    fetchEmployees(currentPage, perPage, currentStatus);
+                }
+
+                // Filter based on status without resetting the page
+                $(".btn-group .btn").click(function() {
+                    const selectedStatus = $(this).find("input").val();
+                    handleFilterAndPagination(selectedStatus);
                 });
+
+                // Initial fetch
+                fetchEmployees(currentPage, perPage, currentStatus)
             });
         </script>
-
     </body>
 
     </html>

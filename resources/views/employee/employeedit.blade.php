@@ -376,15 +376,15 @@
                     </table>
 
                     <div class="clearfix">
-                        <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
-                        <ul class="pagination">
-                            <li class="page-item disabled"><a href="#">Previous</a></li>
-                            <li class="page-item"><a href="#" class="page-link">1</a></li>
-                            <li class="page-item"><a href="#" class="page-link">2</a></li>
-                            <li class="page-item active"><a href="#" class="page-link">3</a></li>
-                            <li class="page-item"><a href="#" class="page-link">4</a></li>
-                            <li class="page-item"><a href="#" class="page-link">5</a></li>
-                            <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                        <div class="hint-text">Showing <b id="showing-entries">0</b> out of <b id="total-entries">0</b>
+                            entries</div>
+                        <ul class="pagination" id="pagination">
+                            <li class="page-item disabled" id="prevPage">
+                                <a href="javascript:void(0)" class="page-link">Previous</a>
+                            </li>
+                            <li class="page-item disabled" id="nextPage">
+                                <a href="javascript:void(0)" class="page-link">Next</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -520,51 +520,101 @@
 
         <script>
             $(document).ready(function() {
-                // Initialize employee data retrieval
-                fetchEmployees();
+                let currentPage = 1;
+                const perPage = 10;
+                let totalEmployees = 0;
+
+                fetchEmployees(currentPage, perPage);
 
                 // Update employee data every 5 seconds
-                setInterval(fetchEmployees, 5000);
+                setInterval(() => fetchEmployees(currentPage, perPage), 5000);
 
                 // Function to retrieve all employee data
-                function fetchEmployees() {
-                    axios.get('/api/employees')
+                function fetchEmployees(page = 1, limit = perPage) {
+                    axios.get(`/api/employees?page=${page}&perPage=${limit}`)
                         .then(response => {
-                            let employees = response.data.data;
+                            const data = response.data;
+                            const employees = data.data;
+                            totalEmployees = data.total;
+
+                            // Update totalEmployees with the total entries from the API
+                            const totalPages = Math.ceil(totalEmployees / perPage);
+
                             let employeeTableBody = $('#employeeTableBody');
                             employeeTableBody.empty();
                             employees.forEach(employee => {
                                 employeeTableBody.append(`
-                                    <tr>
-                                        <td>
-                                            <span class="custom-checkbox">
-                                                <input type="checkbox" id="selectAll${employee.id}" name="options[]" value="${employee.id}">
-                                                <label for="checkbox${employee.id}"></label>
-                                            </span>
-                                        </td>
-                                        <td>${employee.id}</td>
-                                        <td>${employee.name}</td>
-                                        <td>${employee.email}</td>
-                                        <td>${employee.address}</td>
-                                        <td>${employee.phone_number}</td>
-                                        <td>${employee.position}</td>
-                                        <td>${employee.status}</td>
-                                        <td>
-                                            <a href="#editEmployeeModal" class="edit" data-toggle="modal" onclick="editEmployee(${employee.id})">
-                                                <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
-                                            </a>
-                                            <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" onclick="deleteEmployee(${employee.id})">
-                                                <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                `);
+                                <tr>
+                                    <td>
+                                        <span class="custom-checkbox">
+                                            <input type="checkbox" id="selectAll${employee.id}" name="options[]" value="${employee.id}">
+                                            <label for="checkbox${employee.id}"></label>
+                                        </span>
+                                    </td>
+                                    <td>${employee.id}</td>
+                                    <td>${employee.name}</td>
+                                    <td>${employee.email}</td>
+                                    <td>${employee.address}</td>
+                                    <td>${employee.phone_number}</td>
+                                    <td>${employee.position}</td>
+                                    <td>${employee.status}</td>
+                                    <td>
+                                        <a href="#editEmployeeModal" class="edit" data-toggle="modal" onclick="editEmployee(${employee.id})">
+                                            <i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i>
+                                        </a>
+                                        <a href="#deleteEmployeeModal" class="delete" data-toggle="modal" onclick="deleteEmployee(${employee.id})">
+                                            <i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                        `);
                             });
-                            addCheckboxEventListeners();
+
+                            updatePagination(page, totalPages);
+                            addCheckboxEventListeners(); // Ensure checkboxes work properly
                         })
                         .catch(error => {
                             console.log(error);
                         });
+                }
+
+                function updatePagination(currentPage, totalPages) {
+                    let pagination = $('#pagination');
+                    pagination.empty();
+
+                    // Previous button
+                    let previousClass = currentPage === 1 ? 'disabled' : '';
+                    pagination.append(
+                        `<li class="page-item ${previousClass}"><a href="#" class="page-link" onclick="changePage(${currentPage - 1})">Previous</a></li>`
+                        );
+
+                    // Page numbers
+                    for (let i = 1; i <= totalPages; i++) {
+                        let activeClass = currentPage === i ? 'active' : '';
+                        pagination.append(
+                            `<li class="page-item ${activeClass}"><a href="#" class="page-link" onclick="changePage(${i})">${i}</a></li>`
+                            );
+                    }
+
+                    // Next button
+                    let nextClass = currentPage === totalPages ? 'disabled' : '';
+                    pagination.append(
+                        `<li class="page-item ${nextClass}"><a href="#" class="page-link" onclick="changePage(${currentPage + 1})">Next</a></li>`
+                        );
+
+                    // Update hint text with correct entry count
+                    let startEntry = (currentPage - 1) * perPage + 1;
+                    let endEntry = Math.min(currentPage * perPage, totalEmployees);
+                    $('.hint-text').html(
+                        `Showing <b>${startEntry}</b> to <b>${endEntry}</b> of <b>${totalEmployees}</b> entries`);
+                }
+
+                // Change page function
+                window.changePage = function(page) {
+                    if (page > 0 && page <= Math.ceil(totalEmployees / perPage)) {
+                        currentPage = page;
+                        fetchEmployees(currentPage, perPage);
+                    }
                 }
 
                 // Function to create new employees

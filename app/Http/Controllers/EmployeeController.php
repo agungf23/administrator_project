@@ -7,11 +7,54 @@ use App\Models\Employee;
 
 class EmployeeController extends Controller
 {
+
+    // Total Employee
+    public function dashboard()
+    {
+        $totalEmployees = Employee::count();
+        $activeEmployees = Employee::where('status', 'active')->count();
+        $deactiveEmployees = Employee::where('status', 'deactive')->count();
+        return view('dashboard', compact('totalEmployees', 'activeEmployees', 'deactiveEmployees'));
+    }
+
     // Show Data
     public function index(Request $request)
     {
-        $employees = Employee::all();
-        return response()->json(['data' => $employees]);
+        $perPage = $request->query('perPage', 10);
+        $page = $request->query('page', 1);
+        $search = $request->query('search', '');
+        $status = $request->query('status', 'all');
+
+        // Validate parameters
+        $perPage = filter_var($perPage, FILTER_VALIDATE_INT, [
+            'options' => [
+                'default' => 10,
+                'min_range' => 1,
+                'max_range' => 100 // example: max 100 per page
+            ]
+        ]);
+
+        $page = filter_var($page, FILTER_VALIDATE_INT, [
+            'options' => [
+                'default' => 1,
+                'min_range' => 1
+            ]
+        ]);
+
+        $query = Employee::query();
+
+        if (!empty($search)) {
+            $query->where('name', 'LIKE', '%' . $search . '%');
+        }
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        // Paginate with the filtered query
+        $employees = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($employees);
     }
 
     // CREATE Method

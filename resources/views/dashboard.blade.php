@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Total Employees</h5>
-                        <p class="card-text display-4 text-center">100</p>
+                        <p class="card-text display-4 text-center">{{ $totalEmployees }}</p>
                     </div>
                 </div>
             </div>
@@ -20,7 +20,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Active Employees</h5>
-                        <p class="card-text display-4 text-center">80</p>
+                        <p class="card-text display-4 text-center">{{ $activeEmployees }}</p>
                     </div>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Inactive Employees</h5>
-                        <p class="card-text display-4 text-center">20</p>
+                        <p class="card-text display-4 text-center">{{ $deactiveEmployees }}</p>
                     </div>
                 </div>
             </div>

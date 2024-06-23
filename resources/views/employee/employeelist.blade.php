@@ -157,6 +157,46 @@
                 margin-right: 10px;
             }
 
+            .pagination {
+                float: right;
+                margin: 0 0 5px;
+            }
+
+            .pagination li a {
+                border: none;
+                font-size: 13px;
+                min-width: 30px;
+                min-height: 30px;
+                color: #999;
+                margin: 0 2px;
+                line-height: 30px;
+                border-radius: 2px !important;
+                text-align: center;
+                padding: 0 6px;
+            }
+
+            .pagination li a:hover {
+                color: #666;
+            }
+
+            .pagination li.active a,
+            .pagination li.active a.page-link {
+                background: #03A9F4;
+            }
+
+            .pagination li.active a:hover {
+                background: #0397d6;
+            }
+
+            .pagination li.disabled i {
+                color: #ccc;
+            }
+
+            .pagination li i {
+                font-size: 16px;
+                padding-top: 6px
+            }
+
             .search-box {
                 position: relative;
                 float: right;
@@ -265,59 +305,114 @@
                             <!-- Employee data will be filled here by JavaScript -->
                         </tbody>
                     </table>
-
+                    <div class="clearfix">
+                        <div class="hint-text">Showing <b id="showing-entries">0</b> out of <b id="total-entries">0</b>
+                            entries</div>
+                        <ul class="pagination" id="pagination">
+                            <li class="page-item disabled" id="prevPage">
+                                <a href="javascript:void(0)" class="page-link">Previous</a>
+                            </li>
+                            <li class="page-item disabled" id="nextPage">
+                                <a href="javascript:void(0)" class="page-link">Next</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
         <script>
             $(document).ready(function() {
-                // Fungsi untuk mengambil data karyawan dan menampilkan di tabel
-                function fetchEmployees() {
-                    axios.get('/api/employees')
+                let currentPage = 1;
+                const perPage = 10;
+                let totalEntries = 0;
+                let searchTerm = '';
+
+                fetchEmployees(currentPage, perPage, searchTerm);
+
+                function fetchEmployees(page, perPage, search) {
+                    let apiUrl = `/api/employees?page=${page}&perPage=${perPage}`;
+                    if (search) {
+                        apiUrl += `&search=${encodeURIComponent(search)}`;
+                    }
+
+                    axios.get(apiUrl)
                         .then(response => {
-                            let employees = response.data.data;
+                            const data = response.data;
+                            const employees = data.data;
+                            totalEntries = data.total;
+                            const totalPages = Math.ceil(totalEntries / perPage);
+
                             let employeeTableBody = $('#employeeTableBody');
                             employeeTableBody.empty();
                             employees.forEach(employee => {
                                 employeeTableBody.append(`
-                                    <tr>
-                                        <td>${employee.id}</td>
-                                        <td>${employee.name}</td>
-                                        <td>${employee.email}</td>
-                                        <td>${employee.address}</td>
-                                        <td>${employee.phone_number}</td>
-                                    </tr>
-                                `);
+                                <tr>
+                                    <td>${employee.id}</td>
+                                    <td>${employee.name}</td>
+                                    <td>${employee.email}</td>
+                                    <td>${employee.address}</td>
+                                    <td>${employee.phone_number}</td>
+                                </tr>
+                            `);
                             });
+
+                            $('#showing-entries').text((page - 1) * perPage + 1);
+                            $('#showing-to-entries').text(Math.min(page * perPage, totalEntries));
+                            $('#total-entries').text(totalEntries);
+                            updatePagination(page, totalPages);
                         })
                         .catch(error => {
                             console.log(error);
                         });
                 }
 
-                // Inisialisasi pengambilan data karyawan saat halaman dimuat
-                fetchEmployees();
+                function updatePagination(page, totalPages) {
+                    let pagination = $('#pagination');
+                    pagination.empty();
 
-                // Aktifkan tooltips
-                $('[data-toggle="tooltip"]').tooltip();
+                    if (page > 1) {
+                        pagination.append(
+                            `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${page - 1})">Previous</a></li>`
+                        );
+                    } else {
+                        pagination.append(
+                            `<li class="page-item disabled"><a href="javascript:void(0)" class="page-link">Previous</a></li>`
+                        );
+                    }
 
-                // Filter baris tabel berdasarkan istilah pencarian
-                $("#search").on("keyup", function() {
-                    var term = $(this).val().toLowerCase();
-                    $("table tbody tr").each(function() {
-                        $row = $(this);
-                        var name = $row.find("td:nth-child(2)").text().toLowerCase();
-                        if (name.search(term) < 0) {
-                            $row.hide();
+                    for (let i = 1; i <= totalPages; i++) {
+                        if (i === page) {
+                            pagination.append(
+                                `<li class="page-item active"><a href="javascript:void(0)" class="page-link" onclick="changePage(${i})">${i}</a></li>`
+                            );
                         } else {
-                            $row.show();
+                            pagination.append(
+                                `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${i})">${i}</a></li>`
+                            );
                         }
-                    });
-                });
+                    }
 
-                // Refresh data karyawan saat tombol refresh diklik
-                $(".btn-refresh").on("click", function() {
-                    fetchEmployees();
+                    if (page < totalPages) {
+                        pagination.append(
+                            `<li class="page-item"><a href="javascript:void(0)" class="page-link" onclick="changePage(${page + 1})">Next</a></li>`
+                        );
+                    } else {
+                        pagination.append(
+                            `<li class="page-item disabled"><a href="javascript:void(0)" class="page-link">Next</a></li>`
+                        );
+                    }
+                }
+
+                window.changePage = function(page) {
+                    currentPage = page;
+                    fetchEmployees(currentPage, perPage, searchTerm);
+                }
+
+                // Apply search function without filtering client-side
+                $('#search').on('keyup', function() {
+                    searchTerm = $(this).val().toLowerCase();
+                    currentPage = 1; // Reset to first page on search
+                    fetchEmployees(currentPage, perPage, searchTerm);
                 });
             });
         </script>
