@@ -18,7 +18,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Bootstrap CRUD Data Table for Database with Modal Form</title>
+        <title>employee admin/edit</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -501,18 +501,6 @@
                     <form id="deleteEmployeeForm">
                         @csrf
                         @method('DELETE')
-                        <div class="modal-header">
-                            <h4 class="modal-title">Delete Employee</h4>
-                            <button type="button" class="close" data-dismiss="modal"
-                                aria-hidden="true">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete this record?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                            <input type="submit" class="btn btn-danger" value="Delete">
-                        </div>
                     </form>
                 </div>
             </div>
@@ -586,21 +574,21 @@
                     let previousClass = currentPage === 1 ? 'disabled' : '';
                     pagination.append(
                         `<li class="page-item ${previousClass}"><a href="#" class="page-link" onclick="changePage(${currentPage - 1})">Previous</a></li>`
-                        );
+                    );
 
                     // Page numbers
                     for (let i = 1; i <= totalPages; i++) {
                         let activeClass = currentPage === i ? 'active' : '';
                         pagination.append(
                             `<li class="page-item ${activeClass}"><a href="#" class="page-link" onclick="changePage(${i})">${i}</a></li>`
-                            );
+                        );
                     }
 
                     // Next button
                     let nextClass = currentPage === totalPages ? 'disabled' : '';
                     pagination.append(
                         `<li class="page-item ${nextClass}"><a href="#" class="page-link" onclick="changePage(${currentPage + 1})">Next</a></li>`
-                        );
+                    );
 
                     // Update hint text with correct entry count
                     let startEntry = (currentPage - 1) * perPage + 1;
@@ -662,44 +650,104 @@
                     event.preventDefault();
                     let id = $('#update_id').val();
                     let formData = $(this).serialize();
-                    axios.put(`/api/employees/${id}`, formData)
-                        .then(response => {
-                            Swal.fire({
-                                position: "top-end",
-                                icon: "success",
-                                title: "Employee has been updated",
-                                showConfirmButton: false,
-                                timer: 3000
-                            }).then(() => {
-                                $('#editEmployeeModal').modal('hide');
-                                fetchEmployees();
+
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: "btn btn-success",
+                            cancelButton: "btn btn-danger"
+                        },
+                        buttonsStyling: false
+                    });
+
+                    swalWithBootstrapButtons.fire({
+                        title: "Are you sure?",
+                        text: "You are about to update this employee data!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, update it!",
+                        cancelButtonText: "No, cancel!",
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            axios.put(`/api/employees/${id}`, formData)
+                                .then(response => {
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Updated!",
+                                        text: "Employee data has been updated.",
+                                        icon: "success",
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        $('#editEmployeeModal').modal('hide');
+                                        fetchEmployees();
+                                    });
+                                })
+                                .catch(error => {
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Error!",
+                                        text: "Failed to update employee data.",
+                                        icon: "error"
+                                    });
+                                    console.log(error);
+                                });
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            swalWithBootstrapButtons.fire({
+                                title: "Cancelled",
+                                text: "Employee data update cancelled.",
+                                icon: "error"
                             });
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
+                        }
+                    });
                 });
 
                 // Function to delete employees
                 window.deleteEmployee = function(id) {
-                    $('#deleteEmployeeForm').off('submit').on('submit', function(event) {
-                        event.preventDefault();
-                        axios.delete(`/api/employees/${id}`)
-                            .then(response => {
-                                Swal.fire({
-                                    position: "top-end",
-                                    icon: "success",
-                                    title: "Employee has been deleted",
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                }).then(() => {
-                                    $('#deleteEmployeeModal').modal('hide');
-                                    fetchEmployees();
+                    const swalWithBootstrapButtons = Swal.mixin({
+                        customClass: {
+                            confirmButton: "btn btn-success",
+                            cancelButton: "btn btn-danger"
+                        },
+                        buttonsStyling: false
+                    });
+
+                    swalWithBootstrapButtons.fire({
+                        title: "Are you sure?",
+                        text: "You won't be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, delete it!",
+                        cancelButtonText: "No, cancel!",
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            axios.delete(`/api/employees/${id}`)
+                                .then(response => {
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Deleted!",
+                                        text: "Employee has been deleted.",
+                                        icon: "success",
+                                        timer: 3000,
+                                        showConfirmButton: false
+                                    }).then(() => {
+                                        $('#deleteEmployeeModal').modal('hide');
+                                        fetchEmployees();
+                                    });
+                                })
+                                .catch(error => {
+                                    swalWithBootstrapButtons.fire({
+                                        title: "Error!",
+                                        text: "Failed to delete employee.",
+                                        icon: "error"
+                                    });
+                                    console.log(error);
                                 });
-                            })
-                            .catch(error => {
-                                console.log(error);
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            swalWithBootstrapButtons.fire({
+                                title: "Cancelled",
+                                text: "Employee data is safe.",
+                                icon: "error"
                             });
+                        }
                     });
                 };
 

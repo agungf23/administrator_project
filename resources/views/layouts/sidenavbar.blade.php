@@ -30,7 +30,7 @@
                     <a class="nav-link text-white {{ Request::routeIs('employeelist') ? 'active bg-gradient-primary' : '' }}"
                         href="{{ route('employeelist') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">table_view</i>
+                            <i class="material-icons opacity-10">badge</i>
                         </div>
                         <span class="nav-link-text ms-1">Employee List</span>
                     </a>
@@ -39,7 +39,7 @@
                     <a class="nav-link text-white {{ Request::routeIs('employeedit') ? 'active bg-gradient-primary' : '' }}"
                         href="{{ route('employeedit') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">receipt_long</i>
+                            <i class="material-icons opacity-10">edit_square</i>
                         </div>
                         <span class="nav-link-text ms-1">Employee Edit</span>
                     </a>
@@ -48,7 +48,7 @@
                     <a class="nav-link text-white {{ Request::routeIs('employeedetail') ? 'active bg-gradient-primary' : '' }}"
                         href="{{ route('employeedetail') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">view_in_ar</i>
+                            <i class="material-icons opacity-10">info</i>
                         </div>
                         <span class="nav-link-text ms-1">Employee Detail</span>
                     </a>
@@ -59,16 +59,24 @@
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white " href="../pages/profile.html">
+                    <a id="loginLink" class="nav-link text-white" href="#">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">person</i>
+                            <i class="material-icons opacity-10">login</i>
                         </div>
-                        <span class="nav-link-text ms-1">User</span>
+                        <span class="nav-link-text ms-1">Login</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('logout') }}"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <a id="registerLink" class="nav-link text-white" href="#">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">how_to_reg</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Register</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#"
+                        onclick="event.preventDefault(); showLogoutConfirmation();">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">logout</i>
                         </div>
@@ -78,6 +86,75 @@
                         @csrf
                     </form>
                 </li>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script>
+                    $(document).ready(function() {
+                        // Handle click event for Login link
+                        $('#loginLink').on('click', function(event) {
+                            event.preventDefault(); // Prevent default behavior of the link
+                            Swal.fire({
+                                title: "Login",
+                                text: "You need to logout first to log in again.",
+                                icon: "info",
+                                showClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeInUp
+                                    animate__faster
+                                    `
+                                },
+                                hideClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeOutDown
+                                    animate__faster
+                                    `
+                                }
+                            });
+                        });
+
+                        // Handle click event for Register link
+                        $('#registerLink').on('click', function(event) {
+                            event.preventDefault(); // Prevent default behavior of the link
+                            Swal.fire({
+                                title: "Register",
+                                text: "You need to logout first to register a new account.",
+                                icon: "info",
+                                showClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeInUp
+                                    animate__faster
+                                    `
+                                },
+                                hideClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeOutDown
+                                    animate__faster
+                                    `
+                                }
+                            });
+                        });
+                    });
+
+                    function showLogoutConfirmation() {
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "You won't be able to revert this!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, log me out!"
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                document.getElementById('logout-form').submit();
+                            }
+                        });
+                    }
+                </script>
             </ul>
         </div>
     </aside>

@@ -6,12 +6,13 @@
             height: 100%;
         }
     </style>
+
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-lg-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Total Employees</h5>
+                        <h5 class="card-title"><i class="fas fa-users me-2"></i>Total Employees</h5>
                         <p class="card-text display-4 text-center">{{ $totalEmployees }}</p>
                     </div>
                 </div>
@@ -19,7 +20,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Active Employees</h5>
+                        <h5 class="card-title"><i class="fas fa-user-check me-2"></i>Active Employees</h5>
                         <p class="card-text display-4 text-center">{{ $activeEmployees }}</p>
                     </div>
                 </div>
@@ -27,7 +28,7 @@
             <div class="col-lg-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Inactive Employees</h5>
+                        <h5 class="card-title"><i class="fas fa-user-times me-2"></i>Inactive Employees</h5>
                         <p class="card-text display-4 text-center">{{ $deactiveEmployees }}</p>
                     </div>
                 </div>
@@ -36,7 +37,7 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Time</h5>
+                            <h5 class="card-title"><i class="far fa-clock me-2"></i>Time</h5>
                             <p id="time" class="card-text display-4 text-center"></p>
                         </div>
                     </div>
